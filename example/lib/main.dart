@@ -64,6 +64,13 @@ class _MyAppState extends State<MyApp> {
                     },
                   ),
                   ElevatedButton(
+                    child: Text("1.1 Sip init"),
+                    onPressed: () async {
+                      await FlutterLinphone.sipInit();
+                      // print("Sip permissions response: $res");
+                    },
+                  ),
+                  ElevatedButton(
                     child: Text("2. SIP connect"),
                     onPressed: () async {
                       // String username = "0730303046";//"0730303120";

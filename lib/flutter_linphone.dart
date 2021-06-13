@@ -4,6 +4,10 @@ import 'package:flutter/services.dart';
 
 class FlutterLinphone {
   static const MethodChannel _channel = const MethodChannel('flutter_linphone');
+   
+ static Future<void> sipInit() async {
+    return await _channel.invokeMethod('sip_init');
+  }
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');

@@ -40,11 +40,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-/** Helpers. */
+/**
+ * Helpers.
+ */
 public final class LinphoneUtils {
     private static final Handler sHandler = new Handler(Looper.getMainLooper());
 
-    private LinphoneUtils() {}
+    private LinphoneUtils() {
+    }
 
     public static void configureLoggingService(boolean isDebugEnabled, String appName) {
         if (!LinphonePreferences.instance().useJavaLogger()) {

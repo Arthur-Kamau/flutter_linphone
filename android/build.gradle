@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:3.6.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -23,21 +23,6 @@ rootProject.allprojects {
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-
-static def getPackageName() {
-    return "org.linphone"
-}
-
-task getGitVersion() {
-    def gitVersion = "4.4.0"
-
-    try {
-        println("Git version: " + gitVersion)
-    } catch (Exception e) {
-        println("Git not found")
-    }
-    project.version = gitVersion
-}
 
 configurations {
     customImpl.extendsFrom(implementation)
@@ -55,39 +40,14 @@ task linphoneSdkSource() {
     }
 }
 
-///// Exclude Files /////
-
-def excludeFiles = []
-
-// Remove or comment if you want to use those
-excludeFiles.add('**/XmlRpc*')
-excludeFiles.add('**/InAppPurchase*')
-
-def excludePackage = []
-
-excludePackage.add('**/gdb.*')
-excludePackage.add('**/libopenh264**')
-excludePackage.add('**/**tester**')
-
-/////////////////////////
-
 repositories {
-//    maven {
-//        name "local linphone-sdk maven repository"
-//        url file(LinphoneSdkBuildDir + '/maven_repository/')
-//        content {
-//            includeGroup "org.linphone"
-//        }
-//    }
-
     maven {
         name "linphone.org maven repository"
         url "https://linphone.org/maven_repository"
     }
 }
 
-
-project.tasks['preBuild'].dependsOn 'getGitVersion'
+//project.tasks['preBuild'].dependsOn 'getGitVersion'
 project.tasks['preBuild'].dependsOn 'linphoneSdkSource'
 
 android {
@@ -103,22 +63,6 @@ android {
     defaultConfig {
         minSdkVersion 23
     }
-//    applicationVariants.all { variant ->
-//        variant.outputs.all {
-//            outputFileName = "linphone-android-${variant.buildType.name}-${project.version}.apk"
-//        }
-//
-//        // https://developer.android.com/studio/releases/gradle-plugin#3-6-0-behavior for extractNativeLibs
-//        if (variant.buildType.name == "release") {
-//            variant.getMergedFlavor().manifestPlaceholders = [linphone_address_mime_type: "vnd.android.cursor.item/vnd." + getPackageName() + ".provider.sip_address",
-//                                                              linphone_file_provider    : getPackageName() + ".provider",
-//                                                              extractNativeLibs         : "false"]
-//        } else {
-//            variant.getMergedFlavor().manifestPlaceholders = [linphone_address_mime_type: "vnd.android.cursor.item/vnd." + getPackageName() + ".provider.sip_address",
-//                                                              linphone_file_provider    : getPackageName() + ".debug.provider",
-//                                                              extractNativeLibs         : "true"]
-//        }
-//    }
 }
 
 dependencies {

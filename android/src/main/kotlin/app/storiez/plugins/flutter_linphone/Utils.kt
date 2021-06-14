@@ -22,14 +22,14 @@ class Utils {
                 listPermissionsNeeded.add(p)
             }
         }
-        if (!listPermissionsNeeded.isEmpty()) {
+        if (listPermissionsNeeded.isNotEmpty()) {
             ActivityCompat.requestPermissions(
                 activityPluginBinding.activity,
                 listPermissionsNeeded.toTypedArray(),
                 1111
             )
-            return false
+            return true
         }
-        return true
+        return false
     }
 }

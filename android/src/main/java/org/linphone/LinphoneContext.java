@@ -92,22 +92,17 @@ public class LinphoneContext {
     public LinphoneContext(Context context) {
         mContext = context;
         mCoreStartedListeners = new ArrayList<>();
-
         LinphonePreferences.instance().setContext(context);
-        Factory.instance().setLogCollectionPath(context.getFilesDir().getAbsolutePath());
-        boolean isDebugEnabled = LinphonePreferences.instance().isDebugEnabled();
-        LinphoneUtils.configureLoggingService(isDebugEnabled, "Linphone");
-
-        // Dump some debugging information to the logs
-        dumpDeviceInformation();
+        LinphoneUtils.configureLoggingService(false, "linphone");
         sInstance = this;
-        Log.i("[Context] Ready");
+        System.out.println("[Context] Ready");
 
         mListener =
                 new CoreListenerStub() {
                     @Override
                     public void onGlobalStateChanged(Core core, GlobalState state, String message) {
-                        Log.i("[Context] Global state is [", state, "]");
+                        System.out.println("[Context] Global state is:");
+                        System.out.println(state.toString());
 
                         if (state == GlobalState.On) {
                             for (CoreStartedListener listener : mCoreStartedListeners) {
@@ -119,13 +114,14 @@ public class LinphoneContext {
                     @Override
                     public void onConfiguringStatus(
                             Core core, ConfiguringState status, String message) {
-                        Log.i("[Context] Configuring state is [", status, "]");
+                        System.out.println("[Context] Configuring state is:");
+                        System.out.println(status.toString());
 
                         if (status == ConfiguringState.Successful) {
                             LinphonePreferences.instance()
-                                    .setPushNotificationEnabled(
-                                            LinphonePreferences.instance()
-                                                    .isPushNotificationEnabled());
+                                    .setPushNotificationEnabled(false);
+                        }else{
+                            System.out.println("Configuring State failed");
                         }
                     }
 
@@ -171,7 +167,7 @@ public class LinphoneContext {
                         }
                     }
                 };
-
+//
         mLinphoneManager = new LinphoneManager(context);
     }
 
@@ -187,6 +183,7 @@ public class LinphoneContext {
         Core core = LinphoneManager.getCore();
         if (core != null) {
             core.removeListener(mListener);
+            System.out.println("Core is killed");
             core = null; // To allow the gc calls below to free the Core
         }
 
@@ -194,6 +191,7 @@ public class LinphoneContext {
         // Destroy the LinphoneManager second to last to ensure any getCore() call will work
         if (mLinphoneManager != null) {
             mLinphoneManager.destroy();
+            System.out.println("Manager is killed");
         }
 
         // Wait for every other object to be destroyed to make LinphoneService.instance() invalid

@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:flutter_linphone/flutter_linphone.dart';
 
 void main() {
@@ -14,32 +11,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-
+  FlutterLinphone flutterLinphone = FlutterLinphone();
+  String callState = "";
+  int callDuration;
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await FlutterLinphone.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
@@ -51,52 +28,107 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Running on: $_platformVersion\n'),
+              Text("Call state: $callState"),
+              Text("Call duration: $callDuration"),
+              StreamBuilder(
+                  stream: flutterLinphone.onSipStateChanged,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Text("Call XstateX: ${snapshot.data}");
+                    } else {
+                      return Text("??");
+                    }
+                  }),
+              SizedBox(height: 30),
               Wrap(
                 spacing: 5,
                 children: [
                   ElevatedButton(
                     child: Text("1. Get permissions"),
                     onPressed: () async {
-                      bool res = await FlutterLinphone.sipPermissions();
+                      bool res = await flutterLinphone.sipPermissions();
                       print("Sip permissions response: $res");
                     },
                   ),
                   ElevatedButton(
                     child: Text("1.1 Sip init"),
                     onPressed: () async {
-                      await FlutterLinphone.sipInit();
+                      try {
+                        await flutterLinphone.sipInit();
+                      } catch (e) {}
                       // print("Sip permissions response: $res");
                     },
                   ),
                   ElevatedButton(
                     child: Text("2. SIP connect"),
                     onPressed: () async {
-                      // String username = "0730303046";//"0730303120";
-                      // String password =
-                      //     "15ccd10395975a6a583fb20ada1ad0b5";
-                      // String domain = "64.225.106.148";
-                      bool res = await FlutterLinphone.sipConnect();
-                      print("Sip connect response: $res");
+                      String username = "0730303107";
+                      String password = "d40ba9ed761bfc9d923371d7c0af6dc8";
+                      String domain = "46.101.245.128";
+                      try {
+                        bool res = await flutterLinphone.sipConnect(
+                          username: username,
+                          password: password,
+                          domain: domain,
+                          port: 6000,
+                        );
+                        print("Sip connect response: $res");
+                      } catch (e) {}
                     },
                   ),
                   ElevatedButton(
                     child: Text("3.1 Sip Start Audio Call"),
                     onPressed: () async {
-                      await FlutterLinphone.sipAudioCall();
+                      try {
+                        String username = "0727751832";
+                        String domain = "46.101.245.128";
+                        int port = 6000;
+                        bool res = await flutterLinphone.sipAudioCall(
+                          username: username,
+                          domain: domain,
+                          port: port,
+                        );
+                        print("Sip call response: $res");
+                      } catch (e) {}
                     },
                   ),
                   ElevatedButton(
                     child: Text("3.2 Sip End Audio Call"),
                     onPressed: () async {
-                      await FlutterLinphone.sipAudioHangUp();
+                      try {
+                        bool res = await flutterLinphone.sipAudioHangUp();
+                        print("Sip end call response: $res");
+                      } catch (e) {}
+                    },
+                  ),
+                  ElevatedButton(
+                    child: Text("3.3 Sip Audio Call State"),
+                    onPressed: () async {
+                      try {
+                        String res = await flutterLinphone.sipAudioCallState();
+                        setState(() {
+                          callState = res;
+                        });
+                      } catch (e) {}
+                    },
+                  ),
+                  ElevatedButton(
+                    child: Text("3.4 Sip Audio Call Duration"),
+                    onPressed: () async {
+                      try {
+                        int res = await flutterLinphone.sipAudioCallDuration();
+                        setState(() {
+                          callDuration = res;
+                        });
+                      } catch (e) {}
                     },
                   ),
                   ElevatedButton(
                     child: Text("4. SIP disconnect"),
                     onPressed: () async {
-                      bool res = await FlutterLinphone.sipDisConnect();
+                      bool res = await flutterLinphone.sipDisConnect();
                       print("Sip disconnect response: $res");
                     },
                   ),
